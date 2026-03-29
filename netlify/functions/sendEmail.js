@@ -1,17 +1,38 @@
 // sendEmail.js
+
 export async function handler(event, context) {
+    // Handle GET requests safely
+    if (event.httpMethod === "GET") {
+        return {
+            statusCode: 200,
+            body: JSON.stringify({
+                message: "This function expects a POST request with JSON data.",
+                info: "Use your booking form to trigger this function."
+            }),
+        };
+    }
+
     try {
+        // Ensure there is a body
+        if (!event.body) {
+            return { statusCode: 400, body: JSON.stringify({ error: "No JSON body received" }) };
+        }
+
         // Parse data from frontend
-        const { name, email, mobile, message } = JSON.parse(event.body);
+        let { name, email, mobile, message } = JSON.parse(event.body);
+
+        // Validate required fields
+        if (!name || !email || !mobile) {
+            return { statusCode: 400, body: JSON.stringify({ error: "Missing required fields: name, email, mobile" }) };
+        }
 
         // Get environment variables
         const SERVICE_ID = process.env.EMAILJS_SERVICE_ID;
         const TEMPLATE_ID = process.env.EMAILJS_TEMPLATE_ID;
         const PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY;
 
-        // Check if env variables exist
         if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
-            return { statusCode: 500, body: JSON.stringify({ error: "Missing environment variables" }) };
+            return { statusCode: 500, body: JSON.stringify({ error: "Missing EmailJS environment variables" }) };
         }
 
         // Send email via EmailJS API
@@ -26,10 +47,25 @@ export async function handler(event, context) {
             })
         });
 
-        const result = await response.text();
+        const text = await response.text();
 
-        return { statusCode: 200, body: JSON.stringify({ message: "Email sent successfully", emailjs_response: result }) };
+        if (!response.ok) {
+            // Return detailed error if EmailJS API fails
+            return {
+                statusCode: response.status,
+                body: JSON.stringify({ error: "EmailJS API failed", detail: text })
+            };
+        }
+
+        // Success response
+        return {
+            statusCode: 200,
+            body: JSON.stringify({
+                message: "Email sent successfully",
+                emailjs_response: text
+            })
+        };
     } catch (error) {
-        return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
+        return { statusCode: 500, body: JSON.stringify({ error: "Server error", detail: error.message }) };
     }
 }
