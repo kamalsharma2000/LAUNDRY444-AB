@@ -1,153 +1,44 @@
-let cart = [];
-
-function updateCart() {
-    const list = document.getElementById("cartItems");
-    list.innerHTML = "";
-
-    let total = 0;
-
-    cart.forEach(item => {
-        const li = document.createElement("li");
-        li.innerText = `${item.name} - ₹${item.price}`;
-        list.appendChild(li);
-        total += item.price;
-    });
-
-    document.getElementById("totalAmount").innerText = total;
-
-    document.getElementById("para").style.display =
-        cart.length === 0 ? "block" : "none";
-}
-
-////33
-function resetCart() {
-    cart = [];
-    updateCart();
-
-    document.querySelectorAll(".btn1").forEach(btn => {
-        btn.innerHTML = 'Add to Cart <ion-icon name="add-circle-outline"></ion-icon>';
-        btn.classList.remove("added");
-    });
-}
-
-
-////4444
-async function sendEmail(e) {
-    e.preventDefault();
-
-    const data = {
-        name: document.getElementById('userName').value,
-        email: document.getElementById('email').value,
-        mobile: document.getElementById('mobile').value
-    };
-
-    const response = await fetch('/.netlify/functions/sendEmail', {
-        method: 'POST',
-        body: JSON.stringify(data)
-    });
-
-    const result = await response.json();
-    if(result.message){
-        alert('Email sent successfully!');
-    } else {
-        alert('Error sending email !');
-    }
-}
-
-///5555
-function validateAndSend() {
-
-    if (cart.length === 0) {
-        alert("Cart is empty!");
-        return;
-    }
-
-    const name = document.getElementById("userName").value.trim();
-    const email = document.getElementById("email").value.trim();
-    const mobile = document.getElementById("mobile").value.trim();
-
-    if (!name || !email || !mobile) {
-        alert("Fill all details");
-        return;
-    }
-
-    sendMail(); //  only calls after validation
-}
-
+// script.js
 document.addEventListener("DOMContentLoaded", function () {
 
-    const form = document.getElementById("bookingForm");
-    const username = document.getElementById("userName");
-    const email = document.getElementById("email");
-    const mobile = document.getElementById("mobile");
-    const message = document.getElementById("formMessage");
-    const cartList = document.getElementById("cartItems");
+    // ------------- CART ----------------
+    let cart = [];
 
-    // FORM SUBMIT
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
+    function updateCart() {
+        const list = document.getElementById("cartItems");
+        list.innerHTML = "";
 
-        message.innerText = "";
-        message.style.color = "red";
+        let total = 0;
+        cart.forEach(item => {
+            const li = document.createElement("li");
+            li.innerText = `${item.name} - ₹${item.price}`;
+            list.appendChild(li);
+            total += item.price;
+        });
 
-        if (cartList.children.length === 0) {
-            alert("Please select at least one item");
-            return;
-        }
+        document.getElementById("totalAmount").innerText = total;
+        document.getElementById("para").style.display = cart.length === 0 ? "block" : "none";
+    }
 
-        if (
-            username.value.trim() === "" &&
-            email.value.trim() === "" &&
-            mobile.value.trim() === ""
-        ) {
-            message.innerText = "All fields are required";
-            return;
-        }
+    function resetCart() {
+        cart = [];
+        updateCart();
+        document.querySelectorAll(".btn1").forEach(btn => {
+            btn.innerHTML = 'Add to Cart <ion-icon name="add-circle-outline"></ion-icon>';
+            btn.classList.remove("added");
+        });
+    }
 
-        if (username.value.trim() === "") {
-            message.innerText = "Please enter your username";
-            return;
-        }
-
-        if (email.value.trim() === "") {
-            message.innerText = "Please enter your email address";
-            return;
-        }
-
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
-            message.innerText = "Please enter a valid email address";
-            return;
-        }
-
-        if (mobile.value.trim() === "") {
-            message.innerText = "Please enter your mobile number";
-            return;
-        }
-
-        if (!/^[6-9]\d{9}$/.test(mobile.value)) {
-            message.innerText = "Please enter a valid mobile number";
-            return;
-        }
-
-        sendMail();
-    });
-
-    // BUTTON CLICK (CART)
     document.querySelectorAll(".btn1").forEach(btn => {
-
         btn.addEventListener("click", function () {
-
             const name = btn.getAttribute("data-name");
             const price = parseInt(btn.getAttribute("data-price"));
 
             if (!btn.classList.contains("added")) {
-
                 cart.push({ name, price });
                 btn.classList.add("added");
                 btn.innerHTML = 'Remove from Cart <ion-icon name="remove-circle-outline"></ion-icon>';
-
             } else {
-
                 cart = cart.filter(item => item.name !== name);
                 btn.classList.remove("added");
                 btn.innerHTML = 'Add to Cart <ion-icon name="add-circle-outline"></ion-icon>';
@@ -157,24 +48,91 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     });
 
-});
+    // ------------- SEND EMAIL ----------------
+    async function sendEmail() {
+        const data = {
+            name: document.getElementById('userName').value,
+            email: document.getElementById('email').value,
+            mobile: document.getElementById('mobile').value,
+            message: document.getElementById('message') ? document.getElementById('message').value : ""
+        };
 
+        try {
+            const response = await fetch('/.netlify/functions/sendEmail', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
 
-// SUBSCRIBE FORM
-const form = document.getElementById("sbform");
-if (form) {
+            const result = await response.json();
+
+            if (result.message) {
+                alert('Email sent successfully!');
+                document.getElementById('bookingForm').reset();
+                resetCart();
+            } else {
+                alert('Error sending email: ' + (result.error || 'Unknown error'));
+            }
+        } catch (err) {
+            console.error(err);
+            alert('Error connecting to server!');
+        }
+    }
+
+    // ------------- FORM VALIDATION & SUBMIT ----------------
+    const form = document.getElementById("bookingForm");
     form.addEventListener("submit", function (e) {
         e.preventDefault();
-        const name = document.getElementById("fullName2").value.trim();
-        const email = document.getElementById("Email2").value.trim();
 
-        if (!name) { alert("Please enter your name"); return; }
-        if (!email) { alert("Please enter your email"); return; }
+        if (cart.length === 0) {
+            alert("Please select at least one item");
+            return;
+        }
 
-        const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
-        if (!email.match(emailPattern)) { alert("Enter a valid email address"); return; }
+        const name = document.getElementById("userName").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const mobile = document.getElementById("mobile").value.trim();
 
-        alert("Thanks for subscribing!");
-        this.reset();
+        if (!name || !email || !mobile) {
+            alert("All fields are required");
+            return;
+        }
+
+        // Email pattern
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            alert("Please enter a valid email address");
+            return;
+        }
+
+        // Mobile pattern
+        if (!/^[6-9]\d{9}$/.test(mobile)) {
+            alert("Please enter a valid mobile number");
+            return;
+        }
+
+        // Everything ok → send email
+        sendEmail();
     });
-}
+
+    // ------------- SUBSCRIBE FORM ----------------
+    const subscribeForm = document.getElementById("sbform");
+    if (subscribeForm) {
+        subscribeForm.addEventListener("submit", function (e) {
+            e.preventDefault();
+
+            const name = document.getElementById("fullName2").value.trim();
+            const email = document.getElementById("Email2").value.trim();
+
+            if (!name) { alert("Please enter your name"); return; }
+            if (!email) { alert("Please enter your email"); return; }
+            if (!/^[^\s@]+@[^\s@]+\.[a-z]{2,3}$/.test(email)) {
+                alert("Enter a valid email address");
+                return;
+            }
+
+            alert("Thanks for subscribing!");
+            this.reset();
+        });
+    }
+
+});
