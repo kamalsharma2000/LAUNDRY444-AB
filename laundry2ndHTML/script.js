@@ -50,7 +50,7 @@ async function sendEmail(e) {
     if(result.message){
         alert('Email sent successfully!');
     } else {
-        alert('Error sending email.');
+        alert('Error sending email !');
     }
 }
 

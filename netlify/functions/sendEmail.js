@@ -1,16 +1,31 @@
-import emailjs from 'emailjs-com';
-
 export async function handler(event, context) {
-    const { name, email, message } = JSON.parse(event.body);
-
-    const serviceID = process.env.EMAILJS_SERVICE_ID;
-    const templateID = process.env.EMAILJS_TEMPLATE_ID;
-    const userID = process.env.EMAILJS_PUBLIC_KEY;
-
     try {
-        await emailjs.send(serviceID, templateID, { name, email, message }, userID);
-        return { statusCode: 200, body: JSON.stringify({ success: true }) };
+        const { name, email, message } = JSON.parse(event.body);
+
+        const SERVICE_ID = process.env.EMAILJS_SERVICE_ID;
+        const TEMPLATE_ID = process.env.EMAILJS_TEMPLATE_ID;
+        const PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY;
+
+        if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
+            return { statusCode: 500, body: JSON.stringify({ error: "Missing environment variables" }) };
+        }
+
+        const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                service_id: SERVICE_ID,
+                template_id: TEMPLATE_ID,
+                user_id: PUBLIC_KEY,
+                template_params: { name, email, message }
+            })
+        });
+
+        const result = await response.text();
+
+        return { statusCode: 200, body: JSON.stringify({ message: "Email sent successfully", emailjs_response: result }) };
+
     } catch (error) {
-        return { statusCode: 500, body: JSON.stringify({ success: false, error }) };
+        return { statusCode: 500, body: JSON.stringify({ error: error.message }) };
     }
 }
