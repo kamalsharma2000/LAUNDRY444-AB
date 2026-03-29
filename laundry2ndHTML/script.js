@@ -32,49 +32,26 @@ function resetCart() {
 
 
 ////4444
-function sendMail() {
+async function sendEmail(e) {
+    e.preventDefault();
 
-    const user_name = document.getElementById("userName").value;
-    const user_email = document.getElementById("email").value;
-    const mobile = document.getElementById("mobile").value;
+    const data = {
+        name: document.getElementById('name').value,
+        email: document.getElementById('email').value,
+        message: document.getElementById('message').value
+    };
 
-    fetch("/.netlify/functions/sendEmail", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-            user_name: user_name,
-            user_email: user_email,
-            mobile: mobile
-        })
-    })
-    .then(res => res.json())
-    .then(data => {
-        console.log(data);
-
-        alert("Thanks! Your email has been sent successfully.");
-
-        resetCart();
-
-        document.getElementById("userName").value = "";
-        document.getElementById("email").value = "";
-        document.getElementById("mobile").value = "";
-        document.getElementById("formMessage").value = "";
-
-        let msg = document.getElementById("formMessage");
-        msg.style.display = "block";
-        msg.style.color = "green";
-        msg.innerText = "Thanks for booking !";
-
-        setTimeout(function () {
-            msg.style.display = "none";
-        }, 3000);
-    })
-    .catch(err => {
-        console.error(err);
-        alert("Error sending email !");
+    const response = await fetch('/.netlify/functions/sendEmail', {
+        method: 'POST',
+        body: JSON.stringify(data)
     });
+
+    const result = await response.json();
+    if(result.message){
+        alert('Email sent successfully!');
+    } else {
+        alert('Error sending email.');
+    }
 }
 
 ///5555
