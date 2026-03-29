@@ -36,9 +36,9 @@ async function sendEmail(e) {
     e.preventDefault();
 
     const data = {
-        name: document.getElementById('name').value,
+        name: document.getElementById('userName').value,
         email: document.getElementById('email').value,
-        message: document.getElementById('message').value
+        mobile: document.getElementById('mobile').value
     };
 
     const response = await fetch('/.netlify/functions/sendEmail', {

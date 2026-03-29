@@ -418,19 +418,22 @@ input {
     height: 75px;
     width: 100%;
     margin-top: 70px;
-    margin-left: -8px;
+    margin-left: -2px;
     padding: 8px;
     cursor: pointer;
     background: #ecbbdf;
     border: none;
     color: #800080;
-    border-radius: 5px;
+    border-radius: 8px;
     font-size: 30px;
     font-weight: 700;
     box-shadow: -2px 2px 5px rgb(78, 66, 66);
 }
 .bookBtn:hover {
     transition: all 0.4s ease;
+    background-color: #800080;
+    color:#ffffff;
+
 }
 .container1 {
     width: 50%;
