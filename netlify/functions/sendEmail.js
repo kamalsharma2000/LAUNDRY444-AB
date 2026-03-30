@@ -17,8 +17,7 @@ exports.handler = async (event) => {
         const PRIVATE_KEY = process.env.EMAILJS_PRIVATE_KEY;
         console.log("ENV:", SERVICE_ID, TEMPLATE_ID, PRIVATE_KEY); // 
 
-        const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
-            method: "POST",
+        const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {            method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
                 service_id: SERVICE_ID,
