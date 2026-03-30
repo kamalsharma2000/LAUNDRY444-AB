@@ -23,8 +23,8 @@ exports.handler = async (event) => {
             body: JSON.stringify({
                 service_id: SERVICE_ID,
                 template_id: TEMPLATE_ID,
-                private_key: PRIVATE_KEY ,              
-                 template_params: { name, email, mobile, message }
+                private_key: PRIVATE_KEY,
+                template_params: { name, email, mobile, message }
             })
         });
 
