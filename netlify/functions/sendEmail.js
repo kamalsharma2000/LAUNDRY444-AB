@@ -26,7 +26,7 @@ console.log("template_params:", { name, email, mobile, message });
 
 
 
-        console.log("ENV:", SERVICE_ID, TEMPLATE_ID, PRIVATE_KEY); // 
+        console.log("ENV:", SERVICE_ID, TEMPLATE_ID, PRIVATE_KEY ,PUBLIC_KEY); // 
 
         const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
             method: "POST",
