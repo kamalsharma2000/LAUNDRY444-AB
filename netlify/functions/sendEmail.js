@@ -1,7 +1,6 @@
-
 const fetch = require("node-fetch");
 
-exports.handler = async (event, context) => {
+exports.handler = async (event) => {
 
     if (event.httpMethod === "GET") {
         return {
@@ -11,15 +10,13 @@ exports.handler = async (event, context) => {
     }
 
     try {
-        if (!event.body) {
-            return { statusCode: 400, body: JSON.stringify({ error: "No body" }) };
-        }
-
         const { name, email, mobile, message } = JSON.parse(event.body);
 
         const SERVICE_ID = process.env.EMAILJS_SERVICE_ID;
         const TEMPLATE_ID = process.env.EMAILJS_TEMPLATE_ID;
         const PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY;
+
+        console.log("ENV:", SERVICE_ID, TEMPLATE_ID, PUBLIC_KEY); // 👈 ADD
 
         const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
             method: "POST",
@@ -34,12 +31,20 @@ exports.handler = async (event, context) => {
 
         const text = await response.text();
 
+        console.log("EmailJS response:", text); // 👈 ADD
+
+        if (!response.ok) {
+            throw new Error(text); // 👈 FORCE ERROR
+        }
+
         return {
             statusCode: 200,
-            body: JSON.stringify({ message: "Email sent", response: text })
+            body: JSON.stringify({ message: "Email sent successfully" })
         };
 
     } catch (err) {
+        console.error("ERROR:", err.message); // 👈 ADD
+
         return {
             statusCode: 500,
             body: JSON.stringify({ error: err.message })
