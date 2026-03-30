@@ -16,6 +16,16 @@ exports.handler = async (event) => {
         const TEMPLATE_ID = process.env.EMAILJS_TEMPLATE_ID;
         const PUBLIC_KEY = process.env.EMAILJS_PUBLIC_KEY;
         const PRIVATE_KEY = process.env.EMAILJS_PRIVATE_KEY;
+
+
+
+console.log("SERVICE_ID:", SERVICE_ID);
+console.log("TEMPLATE_ID:", TEMPLATE_ID);
+console.log("PUBLIC_KEY:", PUBLIC_KEY);
+console.log("template_params:", { name, email, mobile, message });
+
+
+
         console.log("ENV:", SERVICE_ID, TEMPLATE_ID, PRIVATE_KEY); // 
 
         const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
