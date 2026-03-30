@@ -15,7 +15,7 @@ exports.handler = async (event) => {
         const SERVICE_ID = process.env.EMAILJS_SERVICE_ID;
         const TEMPLATE_ID = process.env.EMAILJS_TEMPLATE_ID;
         const PRIVATE_KEY = process.env.EMAILJS_PRIVATE_KEY;
-        console.log("ENV:", SERVICE_ID, TEMPLATE_ID, PUBLIC_KEY); // 👈 ADD
+        console.log("ENV:", SERVICE_ID, TEMPLATE_ID, PRIVATE_KEY); // 
 
         const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
             method: "POST",
@@ -30,10 +30,10 @@ exports.handler = async (event) => {
 
         const text = await response.text();
 
-        console.log("EmailJS response:", text); // 👈 ADD
+        console.log("EmailJS response:", text); // 
 
         if (!response.ok) {
-            throw new Error(text); // 👈 FORCE ERROR
+            throw new Error(text); // 
         }
 
         return {
@@ -42,7 +42,7 @@ exports.handler = async (event) => {
         };
 
     } catch (err) {
-        console.error("ERROR:", err.message); // 👈 ADD
+        console.error("ERROR:", err.message); // 
 
         return {
             statusCode: 500,
