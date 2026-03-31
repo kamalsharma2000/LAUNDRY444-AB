@@ -50,12 +50,20 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // ------------- SEND EMAIL ----------------
     async function sendEmail() {
-        const data = {
-            name: document.getElementById('userName').value,
-            email: document.getElementById('email').value,
-            mobile: document.getElementById('mobile').value,
-            message: document.getElementById('message') ? document.getElementById('message').value : ""
-        };
+
+        const cartDetails = cart.map(item => `${item.name} - ₹${item.price}`).join("\n");
+
+    const total = cart.reduce((sum, item) => sum + item.price, 0); 
+
+    const userMessage = document.getElementById('message')?.value || "";
+
+    const data = {
+        name: document.getElementById('userName').value,
+        email: document.getElementById('email').value,
+        mobile: document.getElementById('mobile').value,
+        message: `${cartDetails}\n\nTotal: ₹${total}${userMessage ? `\n\nNote: ${userMessage}` : ""}` 
+
+    };
 
         try {
             const response = await fetch('/.netlify/functions/sendEmail', {
