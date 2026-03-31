@@ -74,6 +74,9 @@ This project uses a serverless function:
 * Netlify function calls EmailJS API
 * No keys are exposed in frontend
 * Email includes user details and booking info
+* Added dynamic cart details in booking email  
+* Each selected item is listed with its price  
+* Total amount is automatically calculated and included in the email  
 
 # Important Notes :
 
