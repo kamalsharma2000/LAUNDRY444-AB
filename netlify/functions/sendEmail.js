@@ -18,9 +18,9 @@ exports.handler = async (event) => {
 
 
 
-console.log("SERVICE_ID:", SERVICE_ID);
-console.log("TEMPLATE_ID:", TEMPLATE_ID);
-console.log("PUBLIC_KEY:", PUBLIC_KEY);
+console.log("EMAILJS_SERVICE_ID:", SERVICE_ID);
+console.log("EMAILJS_TEMPLATE_ID", TEMPLATE_ID);
+console.log("EMAILJS_PUBLIC_KEY:", PUBLIC_KEY);
 console.log("template_params:", { name, email, mobile, message });
 
 
